@@ -10,7 +10,6 @@ const links = [
   { to: '/estadisticas', label: 'Estadísticas' },
   { to: '/normas', label: 'Normas' },
   { to: '/coordinacion', label: 'Coordinación' },
-  { to: '/revision', label: 'Revisión' },
 ];
 
 export function Navbar() {

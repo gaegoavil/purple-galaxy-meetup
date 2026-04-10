@@ -51,8 +51,9 @@ function AdminLoginGate({ onAuth }: { onAuth: () => void }) {
           <div className="mx-auto mb-3 h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
             <Lock className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle className="text-xl text-gradient">Acceso Administrador</CardTitle>
-          <p className="text-muted-foreground text-sm mt-1">Ingresa la contraseña para acceder al panel de revisión.</p>
+          <CardTitle className="text-xl text-gradient">Área Restringida</CardTitle>
+          <p className="text-muted-foreground text-sm mt-1">Este panel es de uso interno exclusivo para la moderación de Lachimolala.</p>
+          <p className="text-muted-foreground text-xs mt-1">Ingresa la contraseña de administrador para continuar.</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
