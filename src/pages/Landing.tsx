@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { StarField } from '@/components/StarField';
-import { memberService } from '@/services/memberService';
+import { getApprovedMembers } from '@/services/memberService';
 import { computeStats } from '@/utils/stats';
 import { Users, Music, MapPin, Heart, Clock, Shield } from 'lucide-react';
 
@@ -34,7 +35,10 @@ function Countdown() {
 }
 
 export default function Landing() {
-  const approved = memberService.getApproved();
+  const { data: approved = [] } = useQuery({
+    queryKey: ['approved-members'],
+    queryFn: getApprovedMembers,
+  });
   const stats = computeStats(approved);
 
   const purposeCards = [
