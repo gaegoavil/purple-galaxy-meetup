@@ -3,6 +3,7 @@ import { Member, MemberFormData, MemberStatus } from '@/types/member';
 import { mockMembers } from './mockData';
 
 const STORAGE_KEY = 'lachimolala_members';
+const OVERRIDES_KEY = 'lachimolala_status_overrides';
 
 function loadFromStorage(): Member[] {
   try {
@@ -14,20 +15,36 @@ function loadFromStorage(): Member[] {
   }
 }
 
-function saveToStorage(userMembers: Member[]) {
+function saveToStorage(members: Member[]) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userMembers));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+  } catch {}
+}
+
+function loadOverrides(): Record<string, MemberStatus> {
+  try {
+    const raw = localStorage.getItem(OVERRIDES_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw);
   } catch {
-    // storage full or unavailable – silently ignore
+    return {};
   }
 }
 
-// User-registered members (persisted in localStorage)
-let userMembers: Member[] = loadFromStorage();
+function saveOverrides(o: Record<string, MemberStatus>) {
+  try {
+    localStorage.setItem(OVERRIDES_KEY, JSON.stringify(o));
+  } catch {}
+}
 
-// All members = mock (always approved) + user-registered
+let userMembers: Member[] = loadFromStorage();
+let statusOverrides: Record<string, MemberStatus> = loadOverrides();
+
 function allMembers(): Member[] {
-  return [...mockMembers, ...userMembers];
+  const mocks = mockMembers.map(m =>
+    statusOverrides[m.id] ? { ...m, status: statusOverrides[m.id] } : m
+  );
+  return [...mocks, ...userMembers];
 }
 
 export const memberService = {
@@ -53,10 +70,20 @@ export const memberService = {
 
   // TODO: Protect with admin auth via Supabase RLS
   updateStatus: (id: string, status: MemberStatus): Member | null => {
+    // Check user-registered members first
     const idx = userMembers.findIndex(m => m.id === id);
-    if (idx === -1) return null;
-    userMembers[idx] = { ...userMembers[idx], status };
-    saveToStorage(userMembers);
-    return userMembers[idx];
+    if (idx !== -1) {
+      userMembers[idx] = { ...userMembers[idx], status };
+      saveToStorage(userMembers);
+      return userMembers[idx];
+    }
+    // Check mock members
+    const mock = mockMembers.find(m => m.id === id);
+    if (mock) {
+      statusOverrides[id] = status;
+      saveOverrides(statusOverrides);
+      return { ...mock, status };
+    }
+    return null;
   },
 };
