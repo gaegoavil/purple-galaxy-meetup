@@ -47,9 +47,10 @@ export async function getApprovedMembers(): Promise<Member[]> {
   return (data || []).map(rowToMember);
 }
 
-/** Register a new member (always saved as 'pending' by RLS) */
-export async function registerMember(formData: MemberFormData): Promise<Member> {
-  const { data, error } = await supabase
+/** Register a new member (always saved as 'pending' by RLS).
+ *  We do NOT select the row back because RLS only allows reading approved members. */
+export async function registerMember(formData: MemberFormData): Promise<{ success: true }> {
+  const { error } = await supabase
     .from('members')
     .insert({
       nickname: formData.nickname,
@@ -72,11 +73,9 @@ export async function registerMember(formData: MemberFormData): Promise<Member> 
       message: formData.message ?? null,
       avatar_url: formData.avatarUrl ?? null,
       status: 'pending',
-    })
-    .select()
-    .single();
+    });
   if (error) throw error;
-  return rowToMember(data);
+  return { success: true };
 }
 
 // --- Admin operations (via Edge Function, password-protected) ---
