@@ -9,7 +9,6 @@ const TRACKS = [
   { src: '/audio/song-4.mp3', name: 'SWIM – BTS' },
   { src: '/audio/song-5.mp3', name: 'Save ME – BTS' },
   { src: '/audio/song-6.mp3', name: 'Boy With Luv – BTS' },  
-];,
 ];
 // ─────────────────────────────────────────────────────────────────
 
