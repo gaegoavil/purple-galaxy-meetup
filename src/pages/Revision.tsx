@@ -1,3 +1,5 @@
+// TODO: Este módulo usa una contraseña temporal hardcodeada.
+// Debe reemplazarse con autenticación real via Supabase Auth + roles de admin (tabla user_roles con RLS).
 import { useState, useCallback } from 'react';
 import { memberService } from '@/services/memberService';
 import { Member, MemberStatus } from '@/types/member';
@@ -5,7 +7,80 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Clock, Eye, XCircle, User, MapPin, Heart, Music, Ticket, Users } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle, Clock, Eye, XCircle, User, MapPin, Heart, Music, Ticket, Users, LogOut, Lock, ShieldAlert } from 'lucide-react';
+
+// TODO: Reemplazar con validación server-side via Supabase Auth + admin roles
+const TEMP_ADMIN_PASSWORD = 'lachimolala2026';
+const ADMIN_SESSION_KEY = 'lachimolala_admin_session';
+
+function isAdminAuthenticated(): boolean {
+  return localStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+}
+
+function setAdminSession(active: boolean) {
+  if (active) {
+    localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+  } else {
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+  }
+}
+
+// --- Password Gate ---
+
+function AdminLoginGate({ onAuth }: { onAuth: () => void }) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === TEMP_ADMIN_PASSWORD) {
+      setAdminSession(true);
+      onAuth();
+    } else {
+      setError('Contraseña incorrecta. Intenta de nuevo.');
+      setPassword('');
+    }
+  };
+
+  return (
+    <main className="container mx-auto px-4 py-16 max-w-md flex flex-col items-center">
+      <Card className="glass glow-purple w-full">
+        <CardHeader className="text-center pb-2">
+          <div className="mx-auto mb-3 h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+            <Lock className="h-6 w-6 text-primary" />
+          </div>
+          <CardTitle className="text-xl text-gradient">Acceso Administrador</CardTitle>
+          <p className="text-muted-foreground text-sm mt-1">Ingresa la contraseña para acceder al panel de revisión.</p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={e => { setPassword(e.target.value); setError(''); }}
+              className="glass"
+              autoFocus
+            />
+            {error && (
+              <Alert variant="destructive" className="border-destructive/30 bg-destructive/10">
+                <ShieldAlert className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <Button type="submit" className="w-full">
+              <Lock className="h-4 w-4 mr-1" /> Entrar
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </main>
+  );
+}
+
+// --- Review panel (unchanged logic) ---
 
 const STATUS_CONFIG: Record<MemberStatus, { label: string; icon: React.ReactNode; badgeClass: string }> = {
   pending: { label: 'Pendiente', icon: <Clock className="h-4 w-4" />, badgeClass: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' },
@@ -76,8 +151,18 @@ function MemberReviewCard({ member, onStatusChange }: { member: Member; onStatus
 }
 
 export default function Revision() {
+  const [authed, setAuthed] = useState(isAdminAuthenticated);
   const [, setTick] = useState(0);
   const refresh = useCallback(() => setTick(t => t + 1), []);
+
+  const handleLogout = () => {
+    setAdminSession(false);
+    setAuthed(false);
+  };
+
+  if (!authed) {
+    return <AdminLoginGate onAuth={() => setAuthed(true)} />;
+  }
 
   const allMembers = memberService.getAll();
 
@@ -96,7 +181,12 @@ export default function Revision() {
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-5xl">
-      <h1 className="text-3xl font-bold text-gradient mb-2">Panel de Revisión</h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-3xl font-bold text-gradient">Panel de Revisión</h1>
+        <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1.5">
+          <LogOut className="h-4 w-4" /> Cerrar sesión
+        </Button>
+      </div>
       <p className="text-muted-foreground mb-6">Gestiona los registros de ARMYs para Campo C.</p>
 
       <Tabs defaultValue="pending">
