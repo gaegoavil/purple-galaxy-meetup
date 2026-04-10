@@ -53,6 +53,7 @@ const LS_KEY = 'lachimolala-music-pref';
 
 export function AudioProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const shouldAutoplayNextRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -69,10 +70,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const track = TRACKS[trackIndex];
 
   const nextTrack = useCallback(() => {
+    shouldAutoplayNextRef.current = true;
     setTrackIndex((prev) => (prev + 1) % TRACKS.length);
   }, []);
 
   const prevTrack = useCallback(() => {
+    shouldAutoplayNextRef.current = true;
     setTrackIndex((prev) => (prev - 1 + TRACKS.length) % TRACKS.length);
   }, []);
 
@@ -114,6 +117,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
     const onEnded = () => {
       if (TRACKS.length > 1) {
+        shouldAutoplayNextRef.current = true;
         setTrackIndex((prev) => (prev + 1) % TRACKS.length);
       }
     };
@@ -125,9 +129,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     audio.addEventListener('pause', onPause);
     audio.addEventListener('ended', onEnded);
 
-    if (wasPlaying) {
+    const shouldPlayNow = wasPlaying || shouldAutoplayNextRef.current;
+
+    if (shouldPlayNow) {
       audio.play().catch(() => setHasError(true));
     }
+
+    shouldAutoplayNextRef.current = false;
 
     return () => {
       audio.pause();
