@@ -19,7 +19,10 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 glass-premium border-b border-border/30">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <Link to="/" className="text-lg font-bold text-gradient-intense tracking-wider uppercase">ARIRANG</Link>
+        <Link to="/" className="flex items-center gap-2 text-lg font-bold text-gradient-intense tracking-wider uppercase">
+          <img src="/arirang-icon.png" alt="ARIRANG" className="h-7 w-7 object-contain" />
+          ARIRANG
+        </Link>
         <div className="hidden md:flex items-center gap-1">
           {links.map(l => (
             <Link
