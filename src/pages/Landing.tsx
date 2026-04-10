@@ -246,7 +246,7 @@ export default function Landing() {
       <footer className="border-t border-border/30 py-10 mt-12">
         <div className="container mx-auto px-4 text-center space-y-3">
           <p className="text-gradient-intense font-bold text-lg uppercase tracking-wider">BTS WORLD TOUR ARIRANG – Campo C</p>
-          <p className="text-sm text-muted-foreground">Hecho con 🔥 por ARMYs, para ARMYs · 07 de octubre</p>
+          <p className="text-sm text-muted-foreground">Hecho con dedicación por el army boy Giovanny Egoavil 💜 para ARMYs · 07 de octubre</p>
           <p className="text-xs text-muted-foreground">
             Este es un proyecto de fans independiente. No está afiliado a BIGHIT MUSIC ni a HYBE.
           </p>
