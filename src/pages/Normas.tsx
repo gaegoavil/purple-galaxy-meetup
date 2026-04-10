@@ -46,11 +46,11 @@ export default function Normas() {
         </div>
 
         <AnimatedSection delay={0.2}>
-          <div className="glass-premium rounded-2xl p-8 text-center space-y-3 glow-purple-intense">
+          <div className="glass-premium rounded-2xl p-8 text-center space-y-3 glow-red-intense">
             <Shield className="mx-auto h-10 w-10 text-primary" />
             <p className="text-lg font-semibold text-foreground">Tu seguridad es nuestra prioridad</p>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Al registrarte en Lachimolala aceptas estas normas. El incumplimiento puede resultar en la exclusión de la comunidad.
+              Al registrarte en la comunidad ARIRANG Campo C aceptas estas normas. El incumplimiento puede resultar en la exclusión de la comunidad.
             </p>
           </div>
         </AnimatedSection>

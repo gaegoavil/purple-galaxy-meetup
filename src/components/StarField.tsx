@@ -18,7 +18,7 @@ export function StarField({ count = 50 }: { count?: number }) {
       {stars.map(s => (
         <div
           key={s.id}
-          className="absolute rounded-full bg-lavender animate-twinkle"
+          className="absolute rounded-full bg-silver animate-twinkle"
           style={{
             left: `${s.x}%`, top: `${s.y}%`,
             width: s.size, height: s.size,

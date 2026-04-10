@@ -95,9 +95,9 @@ export default function Registration() {
     return (
       <div className="min-h-screen flex items-center justify-center relative">
         <StarField count={60} />
-        <div className="glass rounded-3xl p-10 md:p-16 max-w-md text-center space-y-6 glow-purple relative z-10">
+        <div className="glass rounded-3xl p-10 md:p-16 max-w-md text-center space-y-6 glow-red relative z-10">
           <Heart className="mx-auto h-16 w-16 text-primary animate-float" />
-          <h2 className="text-3xl font-bold text-gradient">¡Borahae! 💜</h2>
+          <h2 className="text-3xl font-bold text-gradient">¡Registro enviado! 🔥</h2>
           <p className="text-muted-foreground">
             Tu registro fue enviado exitosamente. Está <span className="text-primary font-semibold">pendiente de verificación</span>. 
             Una vez aprobado, aparecerás en el muro de Campo C.
@@ -124,11 +124,11 @@ export default function Registration() {
       <StarField count={40} />
       <div className="container mx-auto px-4 max-w-2xl relative z-10">
         <div className="text-center space-y-3 mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-gradient">Únete a Lachimolala</h1>
-          <p className="text-muted-foreground">Regístrate para ser parte de nuestra comunidad de Campo C – 07 de octubre</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gradient">Únete a la comunidad ARIRANG</h1>
+          <p className="text-muted-foreground">Regístrate para ser parte de la coordinación de Campo C – 07 de octubre</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="glass rounded-3xl p-6 md:p-10 space-y-6 glow-purple">
+        <form onSubmit={handleSubmit} className="glass rounded-3xl p-6 md:p-10 space-y-6 glow-red">
           {/* Identity */}
           <div className="space-y-1 pb-2 border-b border-border/50">
             <h3 className="font-semibold text-primary text-lg">Identidad ARMY</h3>
@@ -268,7 +268,7 @@ export default function Registration() {
             <div className="flex items-start gap-3">
               <Checkbox id="acceptedRules" checked={acceptedRules} onCheckedChange={v=>setAcceptedRules(!!v)} className="mt-0.5" />
               <Label htmlFor="acceptedRules" className="leading-relaxed">
-                Acepto las normas de seguridad y convivencia del grupo Lachimolala. Me comprometo a cuidar la comunidad y no compartir datos sensibles. *
+                Acepto las normas de seguridad y convivencia de la comunidad ARIRANG Campo C. Me comprometo a cuidar la comunidad y no compartir datos sensibles. *
               </Label>
             </div>
             {errors.acceptedRules && <p className="text-xs text-destructive ml-7">{errors.acceptedRules}</p>}
@@ -278,8 +278,8 @@ export default function Registration() {
             <p className="text-sm text-destructive text-center">{submitError}</p>
           )}
 
-          <Button type="submit" size="lg" className="w-full text-base glow-purple" disabled={loading}>
-            {loading ? <><Loader2 className="animate-spin" /> Enviando...</> : 'Enviar registro 💜'}
+          <Button type="submit" size="lg" className="w-full text-base glow-red" disabled={loading}>
+            {loading ? <><Loader2 className="animate-spin" /> Enviando...</> : 'Enviar registro 🔥'}
           </Button>
         </form>
       </div>

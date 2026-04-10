@@ -101,7 +101,7 @@ export default function Coordinacion() {
               <MapPin className="h-6 w-6 text-primary" />
               <h2 className="text-2xl font-bold text-foreground">Punto de encuentro sugerido</h2>
             </div>
-            <div className="glass-premium rounded-2xl p-6 space-y-3 glow-purple-intense">
+            <div className="glass-premium rounded-2xl p-6 space-y-3 glow-red-intense">
               <p className="text-foreground font-medium">Por definir con el grupo 📍</p>
               <p className="text-sm text-muted-foreground">
                 Una vez que más ARMYs se registren, definiremos un punto de encuentro seguro cerca del venue para Campo C.

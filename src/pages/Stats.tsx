@@ -64,7 +64,7 @@ export default function Stats() {
 
         {s.latestMember && (
           <AnimatedSection delay={0.2}>
-            <div className="glass-premium rounded-2xl p-6 glow-purple-intense text-center space-y-2">
+            <div className="glass-premium rounded-2xl p-6 glow-red-intense text-center space-y-2">
               <UserCheck className="mx-auto h-7 w-7 text-primary" />
               <p className="text-sm text-muted-foreground">Última ARMY verificada</p>
               <p className="text-xl font-bold text-foreground">{s.latestMember.nickname}</p>

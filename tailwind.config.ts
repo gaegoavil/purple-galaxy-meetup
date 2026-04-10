@@ -57,11 +57,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        purple: {
-          glow: "hsl(var(--purple-glow))",
+        red: {
+          glow: "hsl(var(--red-glow))",
         },
-        lavender: "hsl(var(--lavender))",
+        crimson: "hsl(var(--crimson))",
         silver: "hsl(var(--silver))",
+        // Legacy alias
+        lavender: "hsl(var(--silver))",
       },
       borderRadius: {
         lg: "var(--radius)",
