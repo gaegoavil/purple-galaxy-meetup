@@ -1,7 +1,7 @@
 // TODO: Este módulo usa una contraseña temporal enviada via Edge Function.
 // Debe reemplazarse con autenticación real via Supabase Auth + roles de admin (tabla user_roles con RLS).
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { adminListMembers, adminUpdateStatus } from '@/services/memberService';
 import { Member, MemberStatus } from '@/types/member';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -214,11 +214,11 @@ export default function Revision() {
   }, [password, loadMembers]);
 
   // Auto-load on mount if session exists
-  useState(() => {
+  useEffect(() => {
     if (authed && password) {
       loadMembers(password);
     }
-  });
+  }, []);
 
   if (!authed) {
     return <AdminLoginGate onAuth={handleAuth} />;
