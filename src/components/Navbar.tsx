@@ -17,15 +17,15 @@ export function Navbar() {
   const { pathname } = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50 glass border-b border-border/50">
+    <nav className="sticky top-0 z-50 glass-premium border-b border-border/30">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <Link to="/" className="text-lg font-bold text-gradient">Lachimolala</Link>
+        <Link to="/" className="text-lg font-bold text-gradient-intense">Lachimolala</Link>
         <div className="hidden md:flex items-center gap-1">
           {links.map(l => (
             <Link
               key={l.to}
               to={l.to}
-              className={`px-3 py-2 rounded-lg text-sm transition-colors ${pathname === l.to ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-3 py-2 rounded-lg text-sm transition-all duration-200 ${pathname === l.to ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-card/40'}`}
             >
               {l.label}
             </Link>
@@ -36,7 +36,7 @@ export function Navbar() {
         </Button>
       </div>
       {open && (
-        <div className="md:hidden border-t border-border/50 glass">
+        <div className="md:hidden border-t border-border/30 glass-premium">
           {links.map(l => (
             <Link
               key={l.to}
