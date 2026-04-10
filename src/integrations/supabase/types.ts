@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      members: {
+        Row: {
+          accepted_safety_rules: boolean
+          age: number | null
+          army_since: string
+          arrival_mode: string
+          arrival_time: string
+          avatar_url: string | null
+          bias: string
+          bias_wrecker: string | null
+          confirms_october_7: boolean
+          confirms_zona_campo_c: boolean
+          country: string
+          created_at: string
+          district: string
+          early_queue_interest: boolean
+          favorite_album: string
+          favorite_song: string
+          has_confirmed_ticket: boolean
+          id: string
+          instagram: string | null
+          message: string | null
+          nickname: string
+          proof_image_url: string | null
+          status: Database["public"]["Enums"]["member_status"]
+        }
+        Insert: {
+          accepted_safety_rules?: boolean
+          age?: number | null
+          army_since: string
+          arrival_mode: string
+          arrival_time: string
+          avatar_url?: string | null
+          bias: string
+          bias_wrecker?: string | null
+          confirms_october_7?: boolean
+          confirms_zona_campo_c?: boolean
+          country?: string
+          created_at?: string
+          district: string
+          early_queue_interest?: boolean
+          favorite_album: string
+          favorite_song: string
+          has_confirmed_ticket?: boolean
+          id?: string
+          instagram?: string | null
+          message?: string | null
+          nickname: string
+          proof_image_url?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+        }
+        Update: {
+          accepted_safety_rules?: boolean
+          age?: number | null
+          army_since?: string
+          arrival_mode?: string
+          arrival_time?: string
+          avatar_url?: string | null
+          bias?: string
+          bias_wrecker?: string | null
+          confirms_october_7?: boolean
+          confirms_zona_campo_c?: boolean
+          country?: string
+          created_at?: string
+          district?: string
+          early_queue_interest?: boolean
+          favorite_album?: string
+          favorite_song?: string
+          has_confirmed_ticket?: boolean
+          id?: string
+          instagram?: string | null
+          message?: string | null
+          nickname?: string
+          proof_image_url?: string | null
+          status?: Database["public"]["Enums"]["member_status"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +100,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      member_status: "pending" | "under_review" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +227,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      member_status: ["pending", "under_review", "approved", "rejected"],
+    },
   },
 } as const
