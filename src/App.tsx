@@ -10,6 +10,7 @@ import CommunityWall from "./pages/CommunityWall";
 import Stats from "./pages/Stats";
 import Normas from "./pages/Normas";
 import Coordinacion from "./pages/Coordinacion";
+import Revision from "./pages/Revision";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/estadisticas" element={<Stats />} />
           <Route path="/normas" element={<Normas />} />
           <Route path="/coordinacion" element={<Coordinacion />} />
+          <Route path="/revision" element={<Revision />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
