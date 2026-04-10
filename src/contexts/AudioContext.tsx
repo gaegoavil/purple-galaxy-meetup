@@ -4,7 +4,12 @@ import { createContext, useContext, useRef, useState, useCallback, useEffect, Re
 // Add more songs here to create a playlist. For now we have one track.
 const TRACKS = [
   { src: '/audio/body-to-body.mp3', name: 'Body to Body – BTS' },
-  // { src: '/audio/another-song.mp3', name: 'Another Song – BTS' },
+  { src: '/audio/song-2.mp3', name: 'DNA – BTS' },
+  { src: '/audio/song-3.mp3', name: 'Blood Sweat & Tears – BTS' },
+  { src: '/audio/song-4.mp3', name: 'SWIM – BTS' },
+  { src: '/audio/song-5.mp3', name: 'Save ME – BTS' },
+  { src: '/audio/song-6.mp3', name: 'Boy With Luv – BTS' },  
+];,
 ];
 // ─────────────────────────────────────────────────────────────────
 
