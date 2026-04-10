@@ -7,7 +7,7 @@ const links = [
   { to: '/', label: 'Inicio' },
   { to: '/registro', label: 'Registro' },
   { to: '/comunidad', label: 'Comunidad' },
-  { to: '/estadisticas', label: 'Stats' },
+  { to: '/estadisticas', label: 'Estadísticas' },
   { to: '/normas', label: 'Normas' },
   { to: '/coordinacion', label: 'Coordinación' },
 ];
