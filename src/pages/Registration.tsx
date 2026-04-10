@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { StarField } from '@/components/StarField';
-import { memberService } from '@/services/memberService';
+import { registerMember } from '@/services/memberService';
 import { BTS_MEMBERS, BTS_ALBUMS, type MemberFormData, type BTSMember, type ArrivalMode } from '@/types/member';
 import { Heart, Loader2 } from 'lucide-react';
 
@@ -18,6 +18,7 @@ export default function Registration() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string,string>>({});
+  const [submitError, setSubmitError] = useState('');
 
   const [nickname, setNickname] = useState('');
   const [age, setAge] = useState('');
@@ -59,31 +60,35 @@ export default function Registration() {
     ev.preventDefault();
     const errs = validate();
     setErrors(errs);
+    setSubmitError('');
     if (Object.keys(errs).length) return;
 
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1500)); // simulate latency
-
-    const data: MemberFormData = {
-      nickname: nickname.trim(),
-      age: age ? parseInt(age) : undefined,
-      district: district.trim(),
-      country: country.trim() || 'Perú',
-      bias: bias as BTSMember,
-      biasWrecker: biasWrecker ? biasWrecker as BTSMember : undefined,
-      favoriteAlbum, favoriteSong: favoriteSong.trim(), armySince,
-      arrivalMode, arrivalTime,
-      earlyQueueInterest: earlyQueue,
-      confirmsOctober7: confirmsOct,
-      confirmsZonaCampoC: confirmsCampoC,
-      hasConfirmedTicket: hasTicket,
-      acceptedSafetyRules: acceptedRules,
-      instagram: instagram.trim() || undefined,
-      message: message.trim() || undefined,
-    };
-    memberService.register(data);
-    setLoading(false);
-    setSuccess(true);
+    try {
+      const data: MemberFormData = {
+        nickname: nickname.trim(),
+        age: age ? parseInt(age) : undefined,
+        district: district.trim(),
+        country: country.trim() || 'Perú',
+        bias: bias as BTSMember,
+        biasWrecker: biasWrecker ? biasWrecker as BTSMember : undefined,
+        favoriteAlbum, favoriteSong: favoriteSong.trim(), armySince,
+        arrivalMode, arrivalTime,
+        earlyQueueInterest: earlyQueue,
+        confirmsOctober7: confirmsOct,
+        confirmsZonaCampoC: confirmsCampoC,
+        hasConfirmedTicket: hasTicket,
+        acceptedSafetyRules: acceptedRules,
+        instagram: instagram.trim() || undefined,
+        message: message.trim() || undefined,
+      };
+      await registerMember(data);
+      setSuccess(true);
+    } catch (err: unknown) {
+      setSubmitError(err instanceof Error ? err.message : 'Error al enviar el registro. Intenta de nuevo.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (success) {
@@ -268,6 +273,10 @@ export default function Registration() {
             </div>
             {errors.acceptedRules && <p className="text-xs text-destructive ml-7">{errors.acceptedRules}</p>}
           </div>
+
+          {submitError && (
+            <p className="text-sm text-destructive text-center">{submitError}</p>
+          )}
 
           <Button type="submit" size="lg" className="w-full text-base glow-purple" disabled={loading}>
             {loading ? <><Loader2 className="animate-spin" /> Enviando...</> : 'Enviar registro 💜'}

@@ -1,10 +1,14 @@
-import { memberService } from '@/services/memberService';
+import { useQuery } from '@tanstack/react-query';
+import { getApprovedMembers } from '@/services/memberService';
 import { computeStats } from '@/utils/stats';
 import { StarField } from '@/components/StarField';
-import { Users, Music, MapPin, Heart, Clock, User, Moon, UserCheck } from 'lucide-react';
+import { Users, Music, MapPin, Heart, Clock, User, Moon, UserCheck, Loader2 } from 'lucide-react';
 
 export default function Stats() {
-  const approved = memberService.getApproved();
+  const { data: approved = [], isLoading } = useQuery({
+    queryKey: ['approved-members'],
+    queryFn: getApprovedMembers,
+  });
   const s = computeStats(approved);
 
   const cards = [
@@ -17,6 +21,14 @@ export default function Stats() {
     { icon: Moon, label: 'Cola de madrugada', value: s.earlyQueueCount },
     { icon: Clock, label: 'Hora más común', value: s.commonArrivalTime || '—' },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-12 relative">

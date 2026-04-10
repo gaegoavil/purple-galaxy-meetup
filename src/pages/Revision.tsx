@@ -1,7 +1,8 @@
-// TODO: Este módulo usa una contraseña temporal hardcodeada.
+// TODO: Este módulo usa una contraseña temporal enviada via Edge Function.
 // Debe reemplazarse con autenticación real via Supabase Auth + roles de admin (tabla user_roles con RLS).
-import { useState, useCallback } from 'react';
-import { memberService } from '@/services/memberService';
+
+import { useState, useCallback, useEffect } from 'react';
+import { adminListMembers, adminUpdateStatus } from '@/services/memberService';
 import { Member, MemberStatus } from '@/types/member';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,38 +10,50 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, Clock, Eye, XCircle, User, MapPin, Heart, Music, Ticket, Users, LogOut, Lock, ShieldAlert } from 'lucide-react';
+import { CheckCircle, Clock, Eye, XCircle, User, MapPin, Heart, Music, Ticket, Users, LogOut, Lock, ShieldAlert, Loader2 } from 'lucide-react';
 
-// TODO: Reemplazar con validación server-side via Supabase Auth + admin roles
-const TEMP_ADMIN_PASSWORD = 'lachimolala2026';
 const ADMIN_SESSION_KEY = 'lachimolala_admin_session';
+const ADMIN_PW_KEY = 'lachimolala_admin_pw';
 
-function isAdminAuthenticated(): boolean {
-  return localStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+function getStoredPassword(): string | null {
+  return sessionStorage.getItem(ADMIN_PW_KEY);
 }
 
-function setAdminSession(active: boolean) {
-  if (active) {
-    localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+function isAdminAuthenticated(): boolean {
+  return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true' && !!getStoredPassword();
+}
+
+function setAdminSession(password: string | null) {
+  if (password) {
+    sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
+    sessionStorage.setItem(ADMIN_PW_KEY, password);
   } else {
-    localStorage.removeItem(ADMIN_SESSION_KEY);
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    sessionStorage.removeItem(ADMIN_PW_KEY);
   }
 }
 
 // --- Password Gate ---
 
-function AdminLoginGate({ onAuth }: { onAuth: () => void }) {
+function AdminLoginGate({ onAuth }: { onAuth: (password: string) => void }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === TEMP_ADMIN_PASSWORD) {
-      setAdminSession(true);
-      onAuth();
-    } else {
+    setLoading(true);
+    setError('');
+    try {
+      // Validate password by attempting to list members
+      await adminListMembers(password, 'pending');
+      setAdminSession(password);
+      onAuth(password);
+    } catch {
       setError('Contraseña incorrecta. Intenta de nuevo.');
       setPassword('');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,8 +84,9 @@ function AdminLoginGate({ onAuth }: { onAuth: () => void }) {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <Button type="submit" className="w-full">
-              <Lock className="h-4 w-4 mr-1" /> Entrar
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Lock className="h-4 w-4 mr-1" />}
+              Entrar
             </Button>
           </form>
         </CardContent>
@@ -81,7 +95,7 @@ function AdminLoginGate({ onAuth }: { onAuth: () => void }) {
   );
 }
 
-// --- Review panel (unchanged logic) ---
+// --- Review panel ---
 
 const STATUS_CONFIG: Record<MemberStatus, { label: string; icon: React.ReactNode; badgeClass: string }> = {
   pending: { label: 'Pendiente', icon: <Clock className="h-4 w-4" />, badgeClass: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' },
@@ -99,8 +113,9 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-function MemberReviewCard({ member, onStatusChange }: { member: Member; onStatusChange: (id: string, status: MemberStatus) => void }) {
+function MemberReviewCard({ member, onStatusChange, updating }: { member: Member; onStatusChange: (id: string, status: MemberStatus) => void; updating: string | null }) {
   const config = STATUS_CONFIG[member.status];
+  const isUpdating = updating === member.id;
 
   return (
     <Card className="glass glow-purple">
@@ -131,17 +146,17 @@ function MemberReviewCard({ member, onStatusChange }: { member: Member; onStatus
 
         <div className="flex flex-wrap gap-2 pt-4">
           {member.status !== 'approved' && (
-            <Button size="sm" onClick={() => onStatusChange(member.id, 'approved')} className="bg-green-600 hover:bg-green-700 text-foreground">
-              <CheckCircle className="h-3.5 w-3.5 mr-1" /> Aprobar
+            <Button size="sm" onClick={() => onStatusChange(member.id, 'approved')} disabled={isUpdating} className="bg-green-600 hover:bg-green-700 text-foreground">
+              {isUpdating ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle className="h-3.5 w-3.5 mr-1" />} Aprobar
             </Button>
           )}
           {member.status !== 'under_review' && (
-            <Button size="sm" variant="outline" onClick={() => onStatusChange(member.id, 'under_review')}>
+            <Button size="sm" variant="outline" onClick={() => onStatusChange(member.id, 'under_review')} disabled={isUpdating}>
               <Eye className="h-3.5 w-3.5 mr-1" /> En revisión
             </Button>
           )}
           {member.status !== 'rejected' && (
-            <Button size="sm" variant="outline" onClick={() => onStatusChange(member.id, 'rejected')} className="border-destructive/50 text-destructive hover:bg-destructive/10">
+            <Button size="sm" variant="outline" onClick={() => onStatusChange(member.id, 'rejected')} disabled={isUpdating} className="border-destructive/50 text-destructive hover:bg-destructive/10">
               <XCircle className="h-3.5 w-3.5 mr-1" /> Rechazar
             </Button>
           )}
@@ -153,26 +168,63 @@ function MemberReviewCard({ member, onStatusChange }: { member: Member; onStatus
 
 export default function Revision() {
   const [authed, setAuthed] = useState(isAdminAuthenticated);
-  const [, setTick] = useState(0);
-  const refresh = useCallback(() => setTick(t => t + 1), []);
+  const [password, setPasswordState] = useState<string>(getStoredPassword() || '');
+  const [members, setMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<MemberStatus>('pending');
+
+  const loadMembers = useCallback(async (pw: string) => {
+    setLoading(true);
+    try {
+      const data = await adminListMembers(pw);
+      setMembers(data);
+    } catch {
+      // If auth fails, force re-login
+      setAdminSession(null);
+      setAuthed(false);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleAuth = useCallback((pw: string) => {
+    setPasswordState(pw);
+    setAuthed(true);
+    loadMembers(pw);
+  }, [loadMembers]);
 
   const handleLogout = () => {
-    setAdminSession(false);
+    setAdminSession(null);
     setAuthed(false);
+    setMembers([]);
   };
+
+  const handleStatusChange = useCallback(async (id: string, status: MemberStatus) => {
+    setUpdating(id);
+    try {
+      await adminUpdateStatus(password, id, status);
+      // Reload all members
+      await loadMembers(password);
+    } catch {
+      // ignore
+    } finally {
+      setUpdating(null);
+    }
+  }, [password, loadMembers]);
+
+  // Auto-load on mount if session exists
+  useEffect(() => {
+    if (authed && password) {
+      loadMembers(password);
+    }
+  }, []);
 
   if (!authed) {
-    return <AdminLoginGate onAuth={() => setAuthed(true)} />;
+    return <AdminLoginGate onAuth={handleAuth} />;
   }
 
-  const allMembers = memberService.getAll();
-
-  const handleStatusChange = (id: string, status: MemberStatus) => {
-    memberService.updateStatus(id, status);
-    refresh();
-  };
-
-  const byStatus = (status: MemberStatus) => allMembers.filter(m => m.status === status);
+  const byStatus = (status: MemberStatus) => members.filter(m => m.status === status);
   const counts: Record<MemberStatus, number> = {
     pending: byStatus('pending').length,
     under_review: byStatus('under_review').length,
@@ -184,37 +236,48 @@ export default function Revision() {
     <main className="container mx-auto px-4 py-8 max-w-5xl">
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-3xl font-bold text-gradient">Panel de Revisión</h1>
-        <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1.5">
-          <LogOut className="h-4 w-4" /> Cerrar sesión
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => loadMembers(password)} disabled={loading} className="gap-1.5">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Recargar
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleLogout} className="gap-1.5">
+            <LogOut className="h-4 w-4" /> Cerrar sesión
+          </Button>
+        </div>
       </div>
       <p className="text-muted-foreground mb-6">Gestiona los registros de ARMYs para Campo C.</p>
 
-      <Tabs defaultValue="pending">
-        <TabsList className="glass mb-6 flex flex-wrap h-auto gap-1 p-1">
-          {(Object.keys(STATUS_CONFIG) as MemberStatus[]).map(s => (
-            <TabsTrigger key={s} value={s} className="flex items-center gap-1.5 text-sm">
-              {STATUS_CONFIG[s].icon} {STATUS_CONFIG[s].label} ({counts[s]})
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      {loading && members.length === 0 ? (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : (
+        <Tabs value={activeTab} onValueChange={v => setActiveTab(v as MemberStatus)}>
+          <TabsList className="glass mb-6 flex flex-wrap h-auto gap-1 p-1">
+            {(Object.keys(STATUS_CONFIG) as MemberStatus[]).map(s => (
+              <TabsTrigger key={s} value={s} className="flex items-center gap-1.5 text-sm">
+                {STATUS_CONFIG[s].icon} {STATUS_CONFIG[s].label} ({counts[s]})
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-        {(Object.keys(STATUS_CONFIG) as MemberStatus[]).map(status => (
-          <TabsContent key={status} value={status}>
-            {byStatus(status).length === 0 ? (
-              <Card className="glass p-8 text-center">
-                <p className="text-muted-foreground">No hay miembros con estado "{STATUS_CONFIG[status].label}".</p>
-              </Card>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2">
-                {byStatus(status).map(m => (
-                  <MemberReviewCard key={m.id} member={m} onStatusChange={handleStatusChange} />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
+          {(Object.keys(STATUS_CONFIG) as MemberStatus[]).map(status => (
+            <TabsContent key={status} value={status}>
+              {byStatus(status).length === 0 ? (
+                <Card className="glass p-8 text-center">
+                  <p className="text-muted-foreground">No hay miembros con estado "{STATUS_CONFIG[status].label}".</p>
+                </Card>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2">
+                  {byStatus(status).map(m => (
+                    <MemberReviewCard key={m.id} member={m} onStatusChange={handleStatusChange} updating={updating} />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      )}
     </main>
   );
 }
