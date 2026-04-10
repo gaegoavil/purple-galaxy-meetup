@@ -2,16 +2,42 @@
 import { Member, MemberFormData, MemberStatus } from '@/types/member';
 import { mockMembers } from './mockData';
 
-let members: Member[] = [...mockMembers];
+const STORAGE_KEY = 'lachimolala_members';
+
+function loadFromStorage(): Member[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as Member[];
+  } catch {
+    return [];
+  }
+}
+
+function saveToStorage(userMembers: Member[]) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(userMembers));
+  } catch {
+    // storage full or unavailable – silently ignore
+  }
+}
+
+// User-registered members (persisted in localStorage)
+let userMembers: Member[] = loadFromStorage();
+
+// All members = mock (always approved) + user-registered
+function allMembers(): Member[] {
+  return [...mockMembers, ...userMembers];
+}
 
 export const memberService = {
-  getAll: (): Member[] => members,
+  getAll: (): Member[] => allMembers(),
 
-  getApproved: (): Member[] => members.filter(m => m.status === 'approved'),
+  getApproved: (): Member[] => allMembers().filter(m => m.status === 'approved'),
 
-  getPending: (): Member[] => members.filter(m => m.status === 'pending'),
+  getPending: (): Member[] => allMembers().filter(m => m.status === 'pending'),
 
-  getByStatus: (status: MemberStatus): Member[] => members.filter(m => m.status === status),
+  getByStatus: (status: MemberStatus): Member[] => allMembers().filter(m => m.status === status),
 
   register: (data: MemberFormData): Member => {
     const newMember: Member = {
@@ -20,15 +46,17 @@ export const memberService = {
       status: 'pending',
       createdAt: new Date().toISOString(),
     };
-    members = [newMember, ...members];
+    userMembers = [newMember, ...userMembers];
+    saveToStorage(userMembers);
     return newMember;
   },
 
   // TODO: Protect with admin auth via Supabase RLS
   updateStatus: (id: string, status: MemberStatus): Member | null => {
-    const idx = members.findIndex(m => m.id === id);
+    const idx = userMembers.findIndex(m => m.id === id);
     if (idx === -1) return null;
-    members[idx] = { ...members[idx], status };
-    return members[idx];
+    userMembers[idx] = { ...userMembers[idx], status };
+    saveToStorage(userMembers);
+    return userMembers[idx];
   },
 };
