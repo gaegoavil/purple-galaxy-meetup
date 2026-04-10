@@ -17,7 +17,7 @@ function Countdown() {
     const t = setInterval(() => setDiff(target - Date.now()), 1000);
     return () => clearInterval(t);
   }, [target]);
-  if (diff <= 0) return <p className="text-2xl font-bold text-gradient">¡El día llegó! 💜</p>;
+  if (diff <= 0) return <p className="text-2xl font-bold text-gradient">¡El día llegó! 🔥</p>;
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff % 86400000) / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
@@ -77,10 +77,23 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative py-24 md:py-36 overflow-hidden">
-        <AuroraBackground />
-        <StarField count={100} />
+      {/* Hero with cover image */}
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+        {/* Background cover image */}
+        <div className="absolute inset-0">
+          <img
+            src="/images/arirang-cover.jpg"
+            alt="BTS ARIRANG World Tour"
+            className="w-full h-full object-cover"
+          />
+          {/* Dark overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-background/50" />
+          {/* Red atmospheric glow */}
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-primary/5 to-transparent" />
+        </div>
+        <AuroraBackground className="opacity-40" />
+        <StarField count={60} />
         <motion.div
           className="container mx-auto px-4 relative z-10 text-center space-y-10"
           variants={heroStagger}
@@ -93,22 +106,21 @@ export default function Landing() {
             </motion.p>
             <motion.h1
               variants={heroChild}
-              className="text-5xl md:text-7xl font-bold text-gradient-intense leading-tight"
+              className="text-5xl md:text-7xl lg:text-8xl font-black text-gradient-intense leading-tight tracking-tight uppercase"
             >
-              Lachimolala
+              BTS WORLD TOUR
+              <br />
+              <span className="text-6xl md:text-8xl lg:text-9xl">ARIRANG</span>
             </motion.h1>
-            <motion.p variants={heroChild} className="text-2xl md:text-3xl font-light text-lavender">
-              Purple Wall Campo C
-            </motion.p>
-            <motion.p variants={heroChild} className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Un espacio exclusivo de coordinación y seguridad para ARMYs del 07 de octubre en Campo C
+            <motion.p variants={heroChild} className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto">
+              Coordinación y seguridad para ARMYs de Campo C – 07 de octubre
             </motion.p>
           </div>
           <motion.div variants={heroChild} className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="text-base glow-purple-intense hover:scale-105 transition-transform">
+            <Button asChild size="lg" className="text-base glow-red-intense hover:scale-105 transition-transform">
               <Link to="/registro">Quiero registrarme</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-base hover:scale-105 transition-transform">
+            <Button asChild variant="outline" size="lg" className="text-base hover:scale-105 transition-transform border-primary/30 hover:border-primary/60">
               <Link to="/comunidad">Ver ARMYs registradas</Link>
             </Button>
           </motion.div>
@@ -123,9 +135,9 @@ export default function Landing() {
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4 space-y-12">
             <div className="text-center space-y-3">
-              <h2 className="text-3xl md:text-4xl font-bold text-gradient">¿Por qué Lachimolala?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gradient">¿Por qué esta comunidad?</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">
-                No somos un fan club general. Somos una comunidad organizada de ARMYs que asistirán a Campo C el 07 de octubre.
+                Somos una comunidad organizada de ARMYs que asistirán a Campo C el 07 de octubre.
               </p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -164,8 +176,8 @@ export default function Landing() {
               className="space-y-4"
             >
               <p className="text-xs uppercase tracking-[0.4em] text-primary/70">La energía que nos une</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-gradient-intense">
-                Inspiradas por ARIRANG
+              <h2 className="text-4xl md:text-5xl font-black text-gradient-intense uppercase tracking-tight">
+                ARIRANG
               </h2>
               <p className="text-muted-foreground max-w-xl mx-auto text-lg">
                 Raíces profundas, orgullo colectivo y la emoción de estar juntas en un mismo campo.
@@ -178,7 +190,7 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.7 }}
-              className="max-w-2xl mx-auto glass-premium rounded-3xl p-8 md:p-10 glow-purple-intense relative"
+              className="max-w-2xl mx-auto glass-premium rounded-3xl p-8 md:p-10 glow-red-intense relative"
             >
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
               <div className="relative space-y-6">
@@ -233,8 +245,8 @@ export default function Landing() {
       {/* Footer */}
       <footer className="border-t border-border/30 py-10 mt-12">
         <div className="container mx-auto px-4 text-center space-y-3">
-          <p className="text-gradient-intense font-bold text-lg">Lachimolala – Purple Wall Campo C</p>
-          <p className="text-sm text-muted-foreground">Hecho con 💜 por ARMYs, para ARMYs · 07 de octubre</p>
+          <p className="text-gradient-intense font-bold text-lg uppercase tracking-wider">BTS WORLD TOUR ARIRANG – Campo C</p>
+          <p className="text-sm text-muted-foreground">Hecho con 🔥 por ARMYs, para ARMYs · 07 de octubre</p>
           <p className="text-xs text-muted-foreground">
             Este es un proyecto de fans independiente. No está afiliado a BIGHIT MUSIC ni a HYBE.
           </p>
@@ -243,8 +255,8 @@ export default function Landing() {
 
       {/* Floating mobile CTA */}
       <div className="fixed bottom-6 right-6 md:hidden z-40">
-        <Button asChild size="lg" className="rounded-full shadow-2xl glow-purple-intense">
-          <Link to="/registro">💜 Registro</Link>
+        <Button asChild size="lg" className="rounded-full shadow-2xl glow-red-intense">
+          <Link to="/registro">🔥 Registro</Link>
         </Button>
       </div>
     </div>

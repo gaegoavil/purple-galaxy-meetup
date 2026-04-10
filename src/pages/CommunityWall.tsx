@@ -91,7 +91,7 @@ export default function CommunityWall() {
         <AnimatedSection>
           <div className="text-center space-y-3">
             <h1 className="text-3xl md:text-4xl font-bold text-gradient">Muro de Campo C</h1>
-            <p className="text-muted-foreground">ARMYs verificadas que estarán el 07 de octubre 💜</p>
+            <p className="text-muted-foreground">ARMYs verificadas que estarán el 07 de octubre 🔥</p>
           </div>
         </AnimatedSection>
 
@@ -157,10 +157,10 @@ export default function CommunityWall() {
 
         {/* Results */}
         {filtered.length === 0 ? (
-          <div className="glass-premium rounded-2xl p-12 text-center space-y-3 glow-purple-intense">
+          <div className="glass-premium rounded-2xl p-12 text-center space-y-3 glow-red-intense">
             <Heart className="mx-auto h-12 w-12 text-primary animate-float" />
             <p className="text-lg font-semibold text-foreground">No se encontraron ARMYs</p>
-            <p className="text-muted-foreground text-sm">Intenta con otros filtros o sé la primera en registrarte 💜</p>
+            <p className="text-muted-foreground text-sm">Intenta con otros filtros o sé la primera en registrarte 🔥</p>
           </div>
         ) : view === 'grid' ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

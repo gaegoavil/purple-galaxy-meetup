@@ -23,14 +23,14 @@ export function WelcomeMusicModal() {
       <DialogContent className="sm:max-w-md glass border-primary/20 text-center">
         <DialogHeader className="items-center">
           <DialogTitle className="text-2xl text-gradient">
-            Bienvenida/o a Lachimolala 💜
+            Bienvenida/o a ARIRANG 🔥
           </DialogTitle>
           <DialogDescription className="text-muted-foreground text-base">
             ¿Quieres entrar con música?
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col sm:flex-row gap-3 pt-2 justify-center">
-          <Button onClick={() => choose(true)} className="glow-purple gap-2">
+          <Button onClick={() => choose(true)} className="glow-red gap-2">
             <Music className="h-4 w-4" /> Entrar con música
           </Button>
           <Button variant="outline" onClick={() => choose(false)} className="gap-2">

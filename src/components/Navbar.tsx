@@ -19,7 +19,7 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 glass-premium border-b border-border/30">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <Link to="/" className="text-lg font-bold text-gradient-intense">Lachimolala</Link>
+        <Link to="/" className="text-lg font-bold text-gradient-intense tracking-wider uppercase">ARIRANG</Link>
         <div className="hidden md:flex items-center gap-1">
           {links.map(l => (
             <Link
