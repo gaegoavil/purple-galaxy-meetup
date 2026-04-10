@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { getApprovedMembers } from '@/services/memberService';
 import { filterMembers, sortMembers, getUniqueDistricts, type SortOption } from '@/utils/filters';
 import { BTS_MEMBERS, type BTSMember, type ArrivalMode, type Member } from '@/types/member';
@@ -8,11 +9,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { StarField } from '@/components/StarField';
+import { AnimatedSection } from '@/components/AnimatedSection';
 import { Search, LayoutGrid, List, Users, MapPin, Music, Clock, Heart, Loader2 } from 'lucide-react';
 
-function ProfileCard({ member }: { member: Member }) {
+function ProfileCard({ member, index }: { member: Member; index: number }) {
   return (
-    <div className="glass rounded-2xl p-5 space-y-3 hover:glow-purple transition-all group">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: Math.min(index * 0.05, 0.3), duration: 0.5 }}
+      className="card-premium p-5 space-y-3"
+    >
       <div className="flex items-center gap-3">
         <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
           {member.nickname.charAt(0).toUpperCase()}
@@ -34,10 +42,10 @@ function ProfileCard({ member }: { member: Member }) {
         <p className="flex items-center gap-1"><Clock className="h-3 w-3" />Llegada: {member.arrivalTime}</p>
       </div>
       {member.message && (
-        <p className="text-sm text-muted-foreground italic border-t border-border/50 pt-2">"{member.message}"</p>
+        <p className="text-sm text-muted-foreground italic border-t border-border/30 pt-2">"{member.message}"</p>
       )}
       {member.instagram && <p className="text-xs text-primary">{member.instagram}</p>}
-    </div>
+    </motion.div>
   );
 }
 
@@ -80,13 +88,15 @@ export default function CommunityWall() {
     <div className="min-h-screen py-12 relative">
       <StarField count={30} />
       <div className="container mx-auto px-4 relative z-10 space-y-8">
-        <div className="text-center space-y-3">
-          <h1 className="text-3xl md:text-4xl font-bold text-gradient">Muro de Campo C</h1>
-          <p className="text-muted-foreground">ARMYs verificadas que estarán el 07 de octubre 💜</p>
-        </div>
+        <AnimatedSection>
+          <div className="text-center space-y-3">
+            <h1 className="text-3xl md:text-4xl font-bold text-gradient">Muro de Campo C</h1>
+            <p className="text-muted-foreground">ARMYs verificadas que estarán el 07 de octubre 💜</p>
+          </div>
+        </AnimatedSection>
 
         {/* Filters */}
-        <div className="glass rounded-2xl p-4 md:p-6 space-y-4">
+        <div className="glass-premium rounded-2xl p-4 md:p-6 space-y-4">
           <div className="flex items-center gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -147,19 +157,26 @@ export default function CommunityWall() {
 
         {/* Results */}
         {filtered.length === 0 ? (
-          <div className="glass rounded-2xl p-12 text-center space-y-3 glow-purple">
+          <div className="glass-premium rounded-2xl p-12 text-center space-y-3 glow-purple-intense">
             <Heart className="mx-auto h-12 w-12 text-primary animate-float" />
             <p className="text-lg font-semibold text-foreground">No se encontraron ARMYs</p>
             <p className="text-muted-foreground text-sm">Intenta con otros filtros o sé la primera en registrarte 💜</p>
           </div>
         ) : view === 'grid' ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map(m => <ProfileCard key={m.id} member={m} />)}
+            {filtered.map((m, i) => <ProfileCard key={m.id} member={m} index={i} />)}
           </div>
         ) : (
           <div className="space-y-3">
-            {filtered.map(m => (
-              <div key={m.id} className="glass rounded-xl p-4 flex items-center gap-4">
+            {filtered.map((m, i) => (
+              <motion.div
+                key={m.id}
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: Math.min(i * 0.03, 0.2) }}
+                className="card-premium rounded-xl p-4 flex items-center gap-4"
+              >
                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold">
                   {m.nickname.charAt(0).toUpperCase()}
                 </div>
@@ -171,7 +188,7 @@ export default function CommunityWall() {
                   {m.earlyQueueInterest && <Badge variant="secondary" className="text-xs">🌙</Badge>}
                   <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">{m.arrivalMode === 'sola/o' ? '🙋' : '👥'}</Badge>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
