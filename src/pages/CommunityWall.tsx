@@ -45,20 +45,20 @@ export default function CommunityWall() {
   const districts = useMemo(() => getUniqueDistricts(approved), [approved]);
 
   const [search, setSearch] = useState('');
-  const [biasFilter, setBiasFilter] = useState<string>('');
-  const [districtFilter, setDistrictFilter] = useState<string>('');
-  const [arrivalModeFilter, setArrivalModeFilter] = useState<string>('');
-  const [earlyQueueFilter, setEarlyQueueFilter] = useState<string>('');
+  const [biasFilter, setBiasFilter] = useState<string>('all');
+  const [districtFilter, setDistrictFilter] = useState<string>('all');
+  const [arrivalModeFilter, setArrivalModeFilter] = useState<string>('all');
+  const [earlyQueueFilter, setEarlyQueueFilter] = useState<string>('all');
   const [sort, setSort] = useState<SortOption>('newest');
   const [view, setView] = useState<'grid'|'list'>('grid');
 
   const filtered = useMemo(() => {
     const f = filterMembers(
       approved, search,
-      biasFilter ? biasFilter as BTSMember : undefined,
-      districtFilter || undefined,
-      arrivalModeFilter ? arrivalModeFilter as ArrivalMode : undefined,
-      earlyQueueFilter === '' ? undefined : earlyQueueFilter === 'true',
+      biasFilter !== 'all' ? biasFilter as BTSMember : undefined,
+      districtFilter !== 'all' ? districtFilter : undefined,
+      arrivalModeFilter !== 'all' ? arrivalModeFilter as ArrivalMode : undefined,
+      earlyQueueFilter === 'all' ? undefined : earlyQueueFilter === 'true',
     );
     return sortMembers(f, sort);
   }, [approved, search, biasFilter, districtFilter, arrivalModeFilter, earlyQueueFilter, sort]);

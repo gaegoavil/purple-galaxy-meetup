@@ -7,7 +7,7 @@ import { computeStats } from '@/utils/stats';
 import { Users, Music, MapPin, Heart, Clock, Shield } from 'lucide-react';
 
 function Countdown() {
-  const target = new Date('2025-10-07T00:00:00-05:00').getTime();
+  const target = new Date('2026-10-07T00:00:00-05:00').getTime();
   const [diff, setDiff] = useState(target - Date.now());
   useEffect(() => {
     const t = setInterval(() => setDiff(target - Date.now()), 1000);
