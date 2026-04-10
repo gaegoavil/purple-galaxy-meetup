@@ -3,7 +3,17 @@ import { useAudio } from '@/contexts/AudioContext';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import {
-  Play, Pause, Volume2, VolumeX, RotateCcw, Music, ChevronDown, ChevronUp, AlertCircle,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  RotateCcw,
+  Music,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  SkipBack,
+  SkipForward,
 } from 'lucide-react';
 
 function fmt(s: number) {
@@ -13,11 +23,12 @@ function fmt(s: number) {
 }
 
 export function FloatingMusicPlayer() {
-  const {
-    isPlaying, isMuted, volume, progress, duration, currentTime,
-    trackName, hasError, hasInteracted,
-    togglePlay, toggleMute, setVolume, seek, restart,
-  } = useAudio();
+const {
+  isPlaying, isMuted, volume, progress, duration, currentTime,
+  trackName, hasError, hasInteracted,
+  togglePlay, toggleMute, setVolume, seek, restart,
+  nextTrack, prevTrack,
+} = useAudio();
   const [expanded, setExpanded] = useState(false);
 
   if (!hasInteracted) return null;
@@ -71,22 +82,69 @@ export function FloatingMusicPlayer() {
             </div>
           </div>
 
-          {/* Volume + controls */}
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleMute} aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}>
-              {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
-            </Button>
-            <Slider
-              value={[isMuted ? 0 : volume]}
-              max={1}
-              step={0.01}
-              onValueChange={([v]) => setVolume(v)}
-              className="flex-1 cursor-pointer"
-            />
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={restart} aria-label="Reiniciar">
-              <RotateCcw className="h-3.5 w-3.5" />
-            </Button>
-          </div>
+{/* Track controls */}
+<div className="flex items-center justify-center gap-2">
+  <Button
+    variant="ghost"
+    size="icon"
+    className="h-8 w-8"
+    onClick={prevTrack}
+    aria-label="Canción anterior"
+  >
+    <SkipBack className="h-4 w-4" />
+  </Button>
+
+  <Button
+    variant="ghost"
+    size="icon"
+    className="h-8 w-8"
+    onClick={togglePlay}
+    aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
+  >
+    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+  </Button>
+
+  <Button
+    variant="ghost"
+    size="icon"
+    className="h-8 w-8"
+    onClick={nextTrack}
+    aria-label="Siguiente canción"
+  >
+    <SkipForward className="h-4 w-4" />
+  </Button>
+
+  <Button
+    variant="ghost"
+    size="icon"
+    className="h-8 w-8"
+    onClick={restart}
+    aria-label="Reiniciar canción"
+  >
+    <RotateCcw className="h-4 w-4" />
+  </Button>
+</div>
+
+{/* Volume */}
+<div className="flex items-center gap-2">
+  <Button
+    variant="ghost"
+    size="icon"
+    className="h-7 w-7"
+    onClick={toggleMute}
+    aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
+  >
+    {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+  </Button>
+
+  <Slider
+    value={[isMuted ? 0 : volume]}
+    max={1}
+    step={0.01}
+    onValueChange={([v]) => setVolume(v)}
+    className="flex-1 cursor-pointer"
+  />
+</div>
         </div>
       )}
     </div>
