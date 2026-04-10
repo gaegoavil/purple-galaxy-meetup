@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { memberService } from '@/services/memberService';
+import { useQuery } from '@tanstack/react-query';
+import { getApprovedMembers } from '@/services/memberService';
 import { filterMembers, sortMembers, getUniqueDistricts, type SortOption } from '@/utils/filters';
 import { BTS_MEMBERS, type BTSMember, type ArrivalMode, type Member } from '@/types/member';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { StarField } from '@/components/StarField';
-import { Search, LayoutGrid, List, Users, MapPin, Music, Clock, Heart } from 'lucide-react';
+import { Search, LayoutGrid, List, Users, MapPin, Music, Clock, Heart, Loader2 } from 'lucide-react';
 
 function ProfileCard({ member }: { member: Member }) {
   return (
@@ -41,7 +42,11 @@ function ProfileCard({ member }: { member: Member }) {
 }
 
 export default function CommunityWall() {
-  const approved = memberService.getApproved();
+  const { data: approved = [], isLoading } = useQuery({
+    queryKey: ['approved-members'],
+    queryFn: getApprovedMembers,
+  });
+
   const districts = useMemo(() => getUniqueDistricts(approved), [approved]);
 
   const [search, setSearch] = useState('');
@@ -62,6 +67,14 @@ export default function CommunityWall() {
     );
     return sortMembers(f, sort);
   }, [approved, search, biasFilter, districtFilter, arrivalModeFilter, earlyQueueFilter, sort]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-12 relative">

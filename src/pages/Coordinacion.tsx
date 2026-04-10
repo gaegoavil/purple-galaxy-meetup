@@ -1,10 +1,14 @@
 import { useMemo } from 'react';
-import { memberService } from '@/services/memberService';
+import { useQuery } from '@tanstack/react-query';
+import { getApprovedMembers } from '@/services/memberService';
 import { StarField } from '@/components/StarField';
-import { Moon, User, MapPin, Lightbulb, Clock, Droplets, Sun, ShieldCheck, Backpack, Smartphone } from 'lucide-react';
+import { Moon, User, MapPin, Lightbulb, Clock, Droplets, Sun, ShieldCheck, Backpack, Smartphone, Loader2 } from 'lucide-react';
 
 export default function Coordinacion() {
-  const approved = memberService.getApproved();
+  const { data: approved = [], isLoading } = useQuery({
+    queryKey: ['approved-members'],
+    queryFn: getApprovedMembers,
+  });
   const earlyBirds = useMemo(() => approved.filter(m => m.earlyQueueInterest), [approved]);
   const solos = useMemo(() => approved.filter(m => m.arrivalMode === 'sola/o'), [approved]);
 
@@ -16,6 +20,14 @@ export default function Coordinacion() {
     { icon: ShieldCheck, title: 'Documenta tu entrada', desc: 'Ten capturas guardadas en tu teléfono de tu compra (no las compartas).' },
     { icon: MapPin, title: 'Ubica las salidas', desc: 'Al llegar al venue, identifica salidas de emergencia y puntos de encuentro.' },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-12 relative">
